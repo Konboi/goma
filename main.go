@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/russross/blackfriday"
 )
@@ -37,6 +38,7 @@ func GetFile(path string) ([]byte, error) {
 func main() {
 	flag.Parse()
 
+	listen_port := ":" + strconv.Itoa(*port)
 	http.HandleFunc("/", formHandler)
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(listen_port, nil)
 }
