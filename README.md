@@ -1,8 +1,6 @@
 # Description
 
-goma is markdown preview server written by Go.
-
-Auto reload when edit markdown file.
+goma is realtime markdown preview server written by Go.
 
 # Installation
 
@@ -17,4 +15,9 @@ goma path/for/README.md
 # Option
 
 
-* `-p` `--port` Setting port number
+* `--path` Set markdown file path
+* `--port` Set port number.
+
+# Feature
+
+Auto reload when edit markdown file
