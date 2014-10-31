@@ -25,20 +25,10 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(html))
 }
 
-func GetFile(path string) ([]byte, error) {
-	file, err := ioutil.ReadFile(path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return file, nil
-}
-
 func main() {
 	flag.Parse()
 
 	listen_port := ":" + strconv.Itoa(*port)
-	http.HandleFunc("/", formHandler)
+	http.HandleFunc("/", previewHandler)
 	http.ListenAndServe(listen_port, nil)
 }
