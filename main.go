@@ -15,8 +15,9 @@ var (
 	port = flag.Int("port", 8000, "Markdown file path")
 )
 
-func formHandler(w http.ResponseWriter, r *http.Request) {
-	file, err := GetFile(*path)
+func previewHandler(w http.ResponseWriter, r *http.Request) {
+	file, err := ioutil.ReadFile(path)
+
 	if err != nil {
 		panic(err)
 	}
