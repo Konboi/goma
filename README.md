@@ -20,5 +20,5 @@ and access `localhost:5858` on your brouse
 
 # TODO
 
-* Higright ``` area
+* Higright ``` and ' area
 * Fixed reload timing
