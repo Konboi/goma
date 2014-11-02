@@ -9,15 +9,17 @@ goma is realtime markdown preview server written by Go.
 # Useage
 
 ```
-goma path/for/README.md
+goma --path path/for/README.md
 ```
+
+and access `localhost:5858` on your brouse
 
 # Option
 
 
-* `--path` Set markdown file path
-* `--port` Set port number.
+* `--path` Markdown file path
 
-# Feature
+# TODO
 
-Auto reload when edit markdown file
+* Higright code and ``` text
+* Fixed reload timing
