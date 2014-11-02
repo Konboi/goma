@@ -9,7 +9,7 @@ goma is realtime markdown preview server written by Go.
 # Useage
 
 ```
-goma --path path/for/README.md
+go run main.go --path path/for/README.md
 ```
 
 and access `localhost:5858` on your brouse
