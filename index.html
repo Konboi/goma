@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>goma</title>
+  </head>
+  <body>
+    <div>
+      {{.Html}}
+    </div>
+    <script type="text/javascript">
+      var ws;
+      var url = "ws://localhost:5858/ws";
+
+
+      ws = new WebSocket(url);
+      ws.onmessage = function(e) {
+        if (e.data === "update") {
+          location.reload();
+        }
+      }
+    </script>
+  </body>
+</html>

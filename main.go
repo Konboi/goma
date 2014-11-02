@@ -3,52 +3,61 @@ package main
 import (
 	"flag"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"code.google.com/p/go.exp/fsnotify"
+	"code.google.com/p/go.net/websocket"
 	"github.com/russross/blackfriday"
 )
 
+type Markdown struct {
+	Html template.HTML
+}
+
 var (
 	path       = flag.String("path", "README.md", "Markdown file path")
-	port       = flag.Int("port", 8000, "Markdown file path")
+	port       = 5858
 	watcher, _ = fsnotify.NewWatcher()
 )
 
 func previewHandler(w http.ResponseWriter, r *http.Request) {
-	file, err := ioutil.ReadFile(*path)
+	t, err := template.ParseFiles("index.html")
 
 	if err != nil {
 		panic(err)
 	}
-	html := blackfriday.MarkdownCommon(file)
 
-	fmt.Fprintf(w, string(html))
+	file, err := ioutil.ReadFile(*path)
+	if err != nil {
+		panic(err)
+	}
+
+	html := blackfriday.MarkdownCommon(file)
+	md := Markdown{template.HTML(string(html))}
+
+	t.Execute(w, md)
 }
 
-func setWatcher() {
-	go func() {
-		for {
-			select {
-			case ev := <-watcher.Event:
-				if strings.Contains(ev.String(), "MODIFY") {
-					fmt.Printf("hogehoeg \n")
-				}
+func reloadHandler(ws *websocket.Conn) {
+	for {
+		select {
+		case ev := <-watcher.Event:
+			if strings.Contains(ev.String(), "MODIFY") {
+				websocket.Message.Send(ws, "update")
 			}
 		}
-	}()
-	watcher.Watch(*path)
+	}
 }
 
 func main() {
 	flag.Parse()
 
-	setWatcher()
-
-	listen_port := ":" + strconv.Itoa(*port)
+	watcher.Watch(*path)
 	http.HandleFunc("/", previewHandler)
-	http.ListenAndServe(listen_port, nil)
+	http.Handle("/ws", websocket.Handler(reloadHandler))
+
+	http.ListenAndServe(":5858", nil)
 }
