@@ -22,3 +22,5 @@ and access `localhost:5858` on your brouse
 
 * Higright ``` and ' area
 * Fixed reload timing
+* Tidy error message
+* Show access log
