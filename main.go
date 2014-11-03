@@ -9,6 +9,7 @@ import (
 
 	"code.google.com/p/go.exp/fsnotify"
 	"code.google.com/p/go.net/websocket"
+	"fmt"
 	"github.com/russross/blackfriday"
 )
 
@@ -23,10 +24,17 @@ var (
 )
 
 func previewHandler(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("index.html")
+	templ := template.New("goma")
+	templ_file, err := Asset("index.html")
 
 	if err != nil {
-		panic(err)
+		fmt.Errorf("Load Asset Error: %s", err.Error())
+	}
+
+	t, err := templ.Parse(string(templ_file))
+
+	if err != nil {
+		fmt.Errorf("Load Template Error: %s", err.Error())
 	}
 
 	file, err := ioutil.ReadFile(*path)
