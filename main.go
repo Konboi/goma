@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 
 	"code.google.com/p/go.exp/fsnotify"
 	"code.google.com/p/go.net/websocket"
-	"fmt"
 	"github.com/russross/blackfriday"
 )
 
