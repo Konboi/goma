@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"strings"
 
-	"code.google.com/p/go.exp/fsnotify"
-	"code.google.com/p/go.net/websocket"
+	"github.com/fsnotify/fsnotify"
 	"github.com/russross/blackfriday"
+	"golang.org/x/net/websocket"
 )
 
 type Markdown struct {
@@ -51,7 +51,7 @@ func previewHandler(w http.ResponseWriter, r *http.Request) {
 func reloadHandler(ws *websocket.Conn) {
 	for {
 		select {
-		case ev := <-watcher.Event:
+		case ev := <-watcher.Events:
 			if strings.Contains(ev.String(), "MODIFY") {
 				websocket.Message.Send(ws, "update")
 			}
@@ -62,7 +62,7 @@ func reloadHandler(ws *websocket.Conn) {
 func main() {
 	flag.Parse()
 
-	watcher.Watch(*path)
+	watcher.Add(*path)
 	http.HandleFunc("/", previewHandler)
 	http.Handle("/ws", websocket.Handler(reloadHandler))
 
