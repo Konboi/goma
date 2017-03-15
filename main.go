@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"strings"
 
-	"code.google.com/p/go.exp/fsnotify"
-	"code.google.com/p/go.net/websocket"
+	"github.com/fsnotify/fsnotify"
 	"github.com/russross/blackfriday"
+	"golang.org/x/net/websocket"
 )
 
 type Markdown struct {
