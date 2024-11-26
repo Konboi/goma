@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
@@ -18,26 +18,25 @@ type Markdown struct {
 }
 
 var (
-	path       = flag.String("path", "README.md", "Markdown file path")
-	port       = 5858
 	watcher, _ = fsnotify.NewWatcher()
 )
 
-func previewHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) previewHandler(w http.ResponseWriter, r *http.Request) {
 	templ := template.New("goma")
 	templ_file, err := Asset("index.html")
 
 	if err != nil {
-		fmt.Errorf("Load Asset Error: %s", err.Error())
+		fmt.Fprintf(w, "Load Asset Error: "+err.Error())
+
 	}
 
 	t, err := templ.Parse(string(templ_file))
 
 	if err != nil {
-		fmt.Errorf("Load Template Error: %s", err.Error())
+		fmt.Fprintf(w, "Load Template Error: "+err.Error())
 	}
 
-	file, err := ioutil.ReadFile(*path)
+	file, err := os.ReadFile(h.path)
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +47,7 @@ func previewHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, md)
 }
 
-func reloadHandler(ws *websocket.Conn) {
+func (h *Handler) reloadHandler(ws *websocket.Conn) {
 	for {
 		select {
 		case ev := <-watcher.Events:
@@ -59,12 +58,23 @@ func reloadHandler(ws *websocket.Conn) {
 	}
 }
 
+type Handler struct {
+	path string
+}
+
 func main() {
+	var path string
+	var port int
+	flag.StringVar(&path, "path", "README.md", "Markdown file path")
+	flag.IntVar(&port, "port", 5858, "Port number")
 	flag.Parse()
 
-	watcher.Add(*path)
-	http.HandleFunc("/", previewHandler)
-	http.Handle("/ws", websocket.Handler(reloadHandler))
+	handler := &Handler{path: path}
 
-	http.ListenAndServe(":5858", nil)
+	watcher.Add(path)
+	http.HandleFunc("/", handler.previewHandler)
+	http.Handle("/ws", websocket.Handler(handler.reloadHandler))
+
+	fmt.Println(fmt.Sprintf("launched server at http://localhost:%d", port))
+	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
